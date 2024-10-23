@@ -14,7 +14,12 @@ functions:
   api:
     handler: handler.handler
     events:
-      - httpApi: "*"
+      - http:
+          path: /
+          method: get
+      - http:
+          path: /user
+          method: get
 
 package:
   individually: true

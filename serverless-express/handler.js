@@ -1,6 +1,10 @@
 const serverless = require("serverless-http");
 const express = require("express");
 const app = express();
+const morgan = require('morgan');
+const userRouter= require('./src/routes/userRoute')
+
+app.use(morgan('dev')); // Help you debug issues in a serverless environment
 
 app.get("/", (req, res, next) => {
   return res.status(200).json({
@@ -8,16 +12,6 @@ app.get("/", (req, res, next) => {
   });
 });
 
-app.get("/hello", (req, res, next) => {
-  return res.status(200).json({
-    message: "Hello from path!",
-  });
-});
-
-app.use((req, res, next) => {
-  return res.status(404).json({
-    error: "Not Found",
-  });
-});
+app.use('/', userRouter)
 
 exports.handler = serverless(app);
