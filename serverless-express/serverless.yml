@@ -8,7 +8,16 @@ service: serverless-express
 provider:
   name: aws
   runtime: nodejs20.x
+  stage: ${opt:stage, 'dev'}
   region: ap-south-1
+  environment:
+    USER_TABLE_NAME: ${self:custom.UserTable.name}
+  iamRoleStatements:
+    - ${file(iam/UserTableIAM.yml):UserTableIAM}
+
+resources:
+  Resources:
+    UserTable: ${file(resources/UserTable.yml):UserTable}
 
 functions:
   api:
@@ -17,9 +26,11 @@ functions:
       - http:
           path: /
           method: get
+          cors: true
       - http:
-          path: /user
-          method: get
+          path: /user/createUser
+          method: post
+          cors: true
 
 package:
   individually: true
@@ -27,3 +38,8 @@ package:
 build:
   esbuild:
     minify: true
+
+custom:
+  UserTable:
+    name: !Ref UserTable
+    arn: !GetAtt UserTable.Arn
